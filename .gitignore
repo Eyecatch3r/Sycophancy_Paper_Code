@@ -1,0 +1,41 @@
+# Environment files
+.env
+.venv
+venv/
+ENV/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+Study 1 Analyses.zip
+AITA_endorsement_results.csv
+output_sc.csv
+output_scored.csv
+scored_ai.csv
+gpt-3.5-turbo.csv

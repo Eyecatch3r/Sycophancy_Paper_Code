@@ -1,0 +1,7 @@
+pandas
+numpy
+tqdm
+openai
+tenacity
+python-dotenv
+convokit

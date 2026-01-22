@@ -1,0 +1,19 @@
+DV,Term,β,SE,CI_low,CI_high,p,stars
+Rightness judgment,Sycophancy,2.07,0.162,1.752,2.388,0.0,***
+Rightness judgment,Anthropomorphism,0.154,0.16,-0.161,0.468,0.3374,
+Rightness judgment,Interaction,-0.066,0.228,-0.514,0.382,0.7726,
+Repair likelihood,Sycophancy,-1.342,0.158,-1.651,-1.033,0.0,***
+Repair likelihood,Anthropomorphism,0.124,0.156,-0.181,0.43,0.4251,
+Repair likelihood,Interaction,-0.211,0.222,-0.647,0.224,0.3414,
+Return likelihood,Sycophancy,0.826,0.205,0.423,1.229,0.0001,***
+Return likelihood,Anthropomorphism,0.232,0.203,-0.166,0.629,0.2538,
+Return likelihood,Interaction,-0.568,0.289,-1.135,-0.001,0.0495,*
+Response quality,Sycophancy,0.636,0.171,0.299,0.972,0.0002,***
+Response quality,Anthropomorphism,0.262,0.169,-0.071,0.594,0.1225,
+Response quality,Interaction,-0.422,0.241,-0.895,0.052,0.0806,
+Performance trust,Sycophancy,0.466,0.164,0.144,0.789,0.0047,**
+Performance trust,Anthropomorphism,0.159,0.162,-0.16,0.477,0.3281,
+Performance trust,Interaction,-0.383,0.232,-0.837,0.072,0.0987,
+Moral trust,Sycophancy,0.606,0.192,0.229,0.982,0.0016,**
+Moral trust,Anthropomorphism,0.41,0.189,0.039,0.782,0.0303,*
+Moral trust,Interaction,-0.628,0.269,-1.157,-0.099,0.0201,*

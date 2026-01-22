@@ -12,24 +12,29 @@ import argparse
 import sys
 from typing import Tuple, Dict, Any, Optional
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-AZURE_OPENAI_ENDPOINT = # URL
-AZURE_OPENAI_API_KEY = # KEY
-DEPLOYMENT_NAME = 'gpt-4o'
+AZURE_OPENAI_ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
+AZURE_OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
+DEPLOYMENT_NAME = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME', 'gpt-4o')
+API_VERSION = os.getenv('AZURE_OPENAI_API_VERSION', '2024-02-15-preview')
   
 # Azure OpenAI client setup
 client = AzureOpenAI(
     api_key=AZURE_OPENAI_API_KEY,
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    api_version='2024-02-15-preview'
+    api_version=API_VERSION
 )
 
 # Throttle configuration
-MAX_REQUESTS_PER_SECOND = 15
+MAX_REQUESTS_PER_SECOND = int(os.getenv('MAX_REQUESTS_PER_SECOND', '15'))
 semaphore = threading.Semaphore(MAX_REQUESTS_PER_SECOND)
 
 # Prompt templates
