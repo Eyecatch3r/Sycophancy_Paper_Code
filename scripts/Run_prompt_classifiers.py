@@ -12,7 +12,19 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 from openai import OpenAI
+import ctypes
 
+def prevent_system_sleep():
+    """
+    Prevents Windows from sleeping while this script is running.
+    ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
+    """
+    # 0x80000000 = ES_CONTINUOUS
+    # 0x00000001 = ES_SYSTEM_REQUIRED (Forces system to stay awake)
+    # 0x00000002 = ES_DISPLAY_REQUIRED (Optional: Keeps screen on too)
+
+    # We use 0x80000001 to keep SYSTEM awake but allow SCREEN to turn off (saving power)
+    ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from data_loader import DatasetEnricher
