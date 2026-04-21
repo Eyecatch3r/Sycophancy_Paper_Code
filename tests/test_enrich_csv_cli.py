@@ -2,7 +2,6 @@ import unittest
 import tempfile
 import os
 import sys
-import importlib.util
 import pandas as pd
 from unittest.mock import patch
 
@@ -10,11 +9,7 @@ from unittest.mock import patch
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.insert(0, PROJECT_ROOT)
 
-# Load the CLI module by file location to avoid package import quirks
-_cli_path = os.path.join(PROJECT_ROOT, 'scripts', 'enrich_csv_cli.py')
-spec = importlib.util.spec_from_file_location('enrich_csv_cli', _cli_path)
-cli = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(cli)
+import scripts.enrich_csv_cli as cli
 
 
 class TestEnrichCsvCLI(unittest.TestCase):
@@ -35,7 +30,7 @@ class TestEnrichCsvCLI(unittest.TestCase):
         mock_lookup = {'t3_1': 'op one', 't3_2': 'op two'}
 
         # Patch DatasetEnricher.fetch_cmv_lookup_dict to return our mock_lookup
-        with patch('data_loader.DatasetEnricher.fetch_cmv_lookup_dict', return_value=mock_lookup) as mock_fetch:
+        with patch('scripts.data_loader.DatasetEnricher.fetch_cmv_lookup_dict', return_value=mock_lookup) as mock_fetch:
             # Run CLI which will call enrich_csv and write output_path
             returned_df = cli.main(['--input', input_path, '--output', output_path, '--corpus', 'dummy'])
 
