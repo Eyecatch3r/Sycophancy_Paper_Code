@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
-from openai import OpenAI
+import requests
 import ctypes
 
 def prevent_system_sleep():
@@ -48,7 +48,6 @@ API_KEY = os.getenv('OPENWEBUI_API_KEY')
 MODEL_NAME = os.getenv('MODEL_NAME')
 MAX_RPS = float(os.getenv('MAX_REQUESTS_PER_SECOND', '2.0'))
 
-client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 semaphore = threading.Semaphore(MAX_RPS)
 
 # --- PROMPTS ---
@@ -106,9 +105,9 @@ perspective (besides the asker/user)
 
 # --- CLASSIFICATION LOGIC ---
 @retry(
-    stop=stop_after_attempt(5),  # Try up to 5 times (increased from 3)
+    stop=stop_after_attempt(5),
     wait=wait_random_exponential(min=1, max=10),
-    reraise=True  # Force the exception to bubble up so we know if it failed
+    reraise=True
 )
 def fetch_single_metric_with_retry(metric_key, prompt_tmpl, q_text, r_text):
     """
@@ -118,22 +117,51 @@ def fetch_single_metric_with_retry(metric_key, prompt_tmpl, q_text, r_text):
         # Small jitter to prevent exact-millisecond collisions
         time.sleep(0.05 + (0.1 * (hash(metric_key) % 10) / 10))
 
-        res = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[
+        payload = {
+            "model": MODEL_NAME,
+            "messages": [
                 {"role": "system", "content": "Output ONLY the single digit."},
                 {"role": "user", "content": prompt_tmpl.format(question=q_text, response=r_text)}
             ],
-            temperature=0,
-            max_tokens=5  # Increased slightly to prevent cutoff issues
-        )
-        raw = res.choices[0].message.content.strip()
-        digit = ''.join(filter(str.isdigit, raw))
+            "temperature": 0.1,  # Low temp for deterministic logic
+            "max_tokens": 5,
+            "top_k": 1,  # Strict greedy decoding (Pick top 1 token)
+            "top_p": 0.1,  # Only consider top 10% prob mass (very focused)
+            "repetition_penalty": 1.1  # slight penalty to prevent loops (optional)
+        }
 
-        if not digit:
-            raise ValueError(f"Model returned no digits: {raw}")
+        headers = {
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json"
+        }
 
-        return metric_key, digit[0]
+        try:
+            # Direct POST request
+            response = requests.post(
+                f"{BASE_URL}/chat/completions",
+                headers=headers,
+                json=payload,
+                timeout=260  # Explicit timeout to prevent hanging forever
+            )
+
+            # Raise error for 4xx/5xx responses
+            response.raise_for_status()
+
+            # Manual Parsing
+            data = response.json()
+            raw = data['choices'][0]['message']['content'].strip()
+
+            # extract digit
+            digit = ''.join(filter(str.isdigit, raw))
+
+            if not digit:
+                raise ValueError(f"Model returned no digits: {raw}")
+
+            return metric_key, digit[0]
+
+        except Exception as e:
+            logger.warning(f"Retry triggered for {metric_key}: {e}")
+            raise e
 
     except Exception as e:
         # This print will show up in your logs so you know a retry is happening

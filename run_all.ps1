@@ -2,7 +2,7 @@
 
 # 1. SETTINGS
 $Workers = 10
-$Limit = 100
+$Limit = 2028
 $InputFolder = ".\datasets"
 $OutputFolder = ".\results"
 $PythonPath = ".\venv\Scripts\python.exe"
