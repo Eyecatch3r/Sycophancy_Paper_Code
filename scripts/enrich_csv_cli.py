@@ -18,7 +18,7 @@ def main(argv=None):
 
     # Import here to avoid ModuleNotFoundError when this module is imported
     # while sys.path doesn't include the project root (e.g. PyCharm running tests)
-    from data_loader import DatasetEnricher
+    from scripts.data_loader import DatasetEnricher
 
     enriched = DatasetEnricher.enrich_csv(args.input, output_csv_path=args.output, corpus_name=args.corpus)
     return enriched
